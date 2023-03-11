@@ -17,7 +17,8 @@ def download_parquet(url):
   filename = urlparse(url).path.split('/')[-1]
   response = requests.get(url)
   Path(os.path.join(os.getcwd(), "parquets")).mkdir(parents=True, exist_ok=True)
-  open(os.path.join(os.getcwd(), "parquets", filename), "wb").write(response.content)
+  with open(os.path.join(os.getcwd(), "parquets", filename), "wb") as f:
+    f.write(response.content)
 
 def get_cached_parquet_file_size(path):
   if (os.path.isfile(path) == False):
