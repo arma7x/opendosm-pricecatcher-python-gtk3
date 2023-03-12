@@ -66,6 +66,17 @@ def search_pricecatcher(premise_codes = None, item_codes = None):
     return pricecatcher.query(q)
   return pricecatcher
 
+def group_price_list_by_premise_item(dataFrame):
+  price_list = dict()
+  for item in dataFrame.itertuples():
+    if (item[2] not in price_list):
+      price_list[item[2]] = dict()
+    if (item[3] not in price_list[item[2]]):
+      price_list[item[2]][item[3]] = list()
+    price_list[item[2]][item[3]].append(item)
+    price_list[item[2]][item[3]].sort(key = lambda a: a[1], reverse = True)
+  return price_list
+
 
 if (__name__ == '__main__'):
   try:
@@ -84,9 +95,16 @@ if (__name__ == '__main__'):
     print("search_premises by state & district & premise_type:", len(location.axes[0]))
     item_codes = tuple([item_code for _, item_code in group_category.get('item_code').items()])
     premises_codes = tuple([premise_code for _, premise_code in location.get('premise_code').items()])
-    print(len(search_pricecatcher(premise_codes = premises_codes, item_codes = item_codes).axes[0]))
-    print(len(search_pricecatcher(premise_codes = premises_codes).axes[0]))
-    print(len(search_pricecatcher(item_codes = item_codes).axes[0]))
-    print(len(search_pricecatcher().axes[0]))
+    print("search_pricecatcher:", len(search_pricecatcher().axes[0]))
+    print("search_pricecatcher by items:", len(search_pricecatcher(item_codes = item_codes).axes[0]))
+    print("search_pricecatcher by premises:", len(search_pricecatcher(premise_codes = premises_codes).axes[0]))
+    sample = search_pricecatcher(premise_codes = premises_codes, item_codes = item_codes)
+    print("search_pricecatcher by premises and items:", len(sample.axes[0]))
+
+    price_list = group_price_list_by_premise_item(sample)
+    for premise in price_list:
+      for item in price_list[premise]:
+        for i in price_list[premise][item]:
+          print(i)
   except Exception as e:
     print(e)
