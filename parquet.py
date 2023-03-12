@@ -83,23 +83,26 @@ if (__name__ == '__main__'):
     print("groups:", len(get_item_groups()))
     print("categories:", len(get_item_categories()))
     print("location:", len(get_premise_location()))
-    print("search_items all:", len(search_items().axes[0]))
-    print("search_items by category:", len(search_items(item_category='AYAM').axes[0]))
+
+    ayam_barangan_segar = search_items(item_category='AYAM', item_group='BARANGAN SEGAR')
+    print("search_items by category & group:", len(ayam_barangan_segar.axes[0]))
     print("search_items by group:", len(search_items(item_group='BARANGAN SEGAR').axes[0]))
-    group_category = search_items(item_category='AYAM', item_group='BARANGAN SEGAR')
-    print("search_items by category & group:", len(group_category.axes[0]))
-    print("search_premises all:", len(search_premises().axes[0]))
-    print("search_premises by state:", len(search_premises(state = 'Johor').axes[0]))
+    print("search_items by category:", len(search_items(item_category='AYAM').axes[0]))
+    print("search_items all:", len(search_items().axes[0]))
+
+    johor_batu_pahat_hypermarket = search_premises(state = 'Johor', district = 'Batu Pahat', premise_type = 'Hypermarket');
+    print("search_premises by state & district & premise_type:", len(johor_batu_pahat_hypermarket.axes[0]))
     print("search_premises by state & district:", len(search_premises(state = 'Johor', district = 'Batu Pahat').axes[0]))
-    location = search_premises(state = 'Johor', district = 'Batu Pahat', premise_type = 'Hypermarket');
-    print("search_premises by state & district & premise_type:", len(location.axes[0]))
-    item_codes = tuple([item_code for _, item_code in group_category.get('item_code').items()])
-    premises_codes = tuple([premise_code for _, premise_code in location.get('premise_code').items()])
-    print("search_pricecatcher:", len(search_pricecatcher().axes[0]))
-    print("search_pricecatcher by items:", len(search_pricecatcher(item_codes = item_codes).axes[0]))
-    print("search_pricecatcher by premises:", len(search_pricecatcher(premise_codes = premises_codes).axes[0]))
+    print("search_premises by state:", len(search_premises(state = 'Johor').axes[0]))
+    print("search_premises all:", len(search_premises().axes[0]))
+
+    item_codes = tuple([item_code for _, item_code in ayam_barangan_segar.get('item_code').items()])
+    premises_codes = tuple([premise_code for _, premise_code in johor_batu_pahat_hypermarket.get('premise_code').items()])
     sample = search_pricecatcher(premise_codes = premises_codes, item_codes = item_codes)
     print("search_pricecatcher by premises and items:", len(sample.axes[0]))
+    print("search_pricecatcher by premises:", len(search_pricecatcher(premise_codes = premises_codes).axes[0]))
+    print("search_pricecatcher by items:", len(search_pricecatcher(item_codes = item_codes).axes[0]))
+    print("search_pricecatcher:", len(search_pricecatcher().axes[0]))
 
     price_list = group_price_list_by_premise_item(sample)
     for premise in price_list:
