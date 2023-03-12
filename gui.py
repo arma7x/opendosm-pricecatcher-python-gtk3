@@ -59,7 +59,7 @@ class PriceCatcher(Gtk.Window):
 
     button = Gtk.Button.new_with_label("Papar Data")
     button.connect("clicked", self.show_price_list)
-    self.hbox.pack_start(button, True, True, 0)
+    self.hbox.pack_start(button, False, False, 0)
 
     self.add(self.hbox)
 
@@ -103,6 +103,14 @@ class PriceCatcher(Gtk.Window):
 
   def show_price_list(self, button):
     print(self.group, self.category, self.state, self.district, self.premise_type)
+    item_codes = tuple([item_code for _, item_code in parquet.search_items(item_category=self.category, item_group=self.group).get('item_code').items()])
+    premises_codes = tuple([premise_code for _, premise_code in parquet.search_premises(state=self.state, district=self.district, premise_type=self.premise_type).get('premise_code').items()])
+    search_result = parquet.search_pricecatcher(premise_codes = premises_codes, item_codes = item_codes)
+    price_list = parquet.group_price_list_by_premise_item(search_result)
+    for premise in price_list:
+      for item in price_list[premise]:
+        for i in price_list[premise][item]:
+          print(i)
 
   def on_group_combo_changed(self, combo):
     tree_iter = combo.get_active_iter()
@@ -164,7 +172,7 @@ class PriceCatcher(Gtk.Window):
       model = combo.get_model()
       row_id, name = model[tree_iter][:2]
       print("Premise Type Selected: ID=%d, name=%s" % (row_id, name))
-      self.premise_type = name
+      self.premise_type = name if row_id != 0 else None
     else:
       self.premise_type = None
       entry = combo.get_child()
