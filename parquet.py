@@ -34,7 +34,7 @@ def get_premise_location():
       location[premise.loc['state']] = dict()
     if (premise.loc['district'] != None and premise.loc['district'] not in location[premise.loc['state']]):
       location[premise.loc['state']][premise.loc['district']] = list()
-    if (premise.loc['premise_type'] != None and premise.loc['district'] not in location[premise.loc['state']][premise.loc['district']]):
+    if (premise.loc['premise_type'] != None and premise.loc['district'] in location[premise.loc['state']] and premise.loc['premise_type'] not in location[premise.loc['state']][premise.loc['district']]):
       location[premise.loc['state']][premise.loc['district']].append(premise.loc['premise_type'])
   return location
 
