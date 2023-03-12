@@ -102,7 +102,7 @@ class PriceCatcher(Gtk.Window):
       self.premise_type = None
 
   def show_price_list(self, button):
-    print(self.group, self.category, self.state, self.district, self.premise_type)
+    # print(self.group, self.category, self.state, self.district, self.premise_type)
     item_codes = tuple([item_code for _, item_code in parquet.search_items(item_category=self.category, item_group=self.group).get('item_code').items()])
     premises_codes = tuple([premise_code for _, premise_code in parquet.search_premises(state=self.state, district=self.district, premise_type=self.premise_type).get('premise_code').items()])
     search_result = parquet.search_pricecatcher(premise_codes = premises_codes, item_codes = item_codes)
@@ -117,24 +117,24 @@ class PriceCatcher(Gtk.Window):
     if tree_iter is not None:
       model = combo.get_model()
       row_id, name = model[tree_iter][:2]
-      print("Selected: ID=%d, name=%s" % (row_id, name))
+      # print("Selected: ID=%d, name=%s" % (row_id, name))
       self.group = name if row_id != 0 else None
     else:
       self.group = None
       entry = combo.get_child()
-      print("Entered: %s" % entry.get_text())
+      # print("Entered: %s" % entry.get_text())
 
   def on_category_combo_changed(self, combo):
     tree_iter = combo.get_active_iter()
     if tree_iter is not None:
       model = combo.get_model()
       row_id, name = model[tree_iter][:2]
-      print("Selected: ID=%d, name=%s" % (row_id, name))
+      # print("Selected: ID=%d, name=%s" % (row_id, name))
       self.category = name if row_id != 0 else None
     else:
       self.category = None
       entry = combo.get_child()
-      print("Entered: %s" % entry.get_text())
+      # print("Entered: %s" % entry.get_text())
 
   def on_state_combo_changed(self, combo):
     if (self.hboxcombobox != None):
@@ -145,11 +145,11 @@ class PriceCatcher(Gtk.Window):
     if tree_iter is not None:
       model = combo.get_model()
       row_id, name = model[tree_iter][:2]
-      print("State Selected: ID=%d, name=%s" % (row_id, name))
+      # print("State Selected: ID=%d, name=%s" % (row_id, name))
       self.hboxcombobox_append_district_combobox(name)
     else:
       entry = combo.get_child()
-      print("State Entered: %s" % entry.get_text())
+      # print("State Entered: %s" % entry.get_text())
 
   def on_district_combo_changed(self, combo):
     if (self.hboxcombobox != None):
@@ -160,23 +160,23 @@ class PriceCatcher(Gtk.Window):
     if tree_iter is not None:
       model = combo.get_model()
       row_id, name = model[tree_iter][:2]
-      print("District Selected: ID=%d, name=%s" % (row_id, name))
+      # print("District Selected: ID=%d, name=%s" % (row_id, name))
       self.hboxcombobox_append_premise_type_combobox(name)
     else:
       entry = combo.get_child()
-      print("District Entered: %s" % entry.get_text())
+      # print("District Entered: %s" % entry.get_text())
 
   def on_premise_type_combo_changed(self, combo):
     tree_iter = combo.get_active_iter()
     if tree_iter is not None:
       model = combo.get_model()
       row_id, name = model[tree_iter][:2]
-      print("Premise Type Selected: ID=%d, name=%s" % (row_id, name))
+      # print("Premise Type Selected: ID=%d, name=%s" % (row_id, name))
       self.premise_type = name if row_id != 0 else None
     else:
       self.premise_type = None
       entry = combo.get_child()
-      print("Premise Type Entered: %s" % entry.get_text())
+      # print("Premise Type Entered: %s" % entry.get_text())
 
 
 win = PriceCatcher()
