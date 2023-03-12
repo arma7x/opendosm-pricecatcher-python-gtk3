@@ -90,7 +90,7 @@ if (__name__ == '__main__'):
     print("search_items by category:", len(search_items(item_category='AYAM').axes[0]))
     print("search_items all:", len(search_items().axes[0]))
 
-    johor_batu_pahat_hypermarket = search_premises(state = 'Johor', district = 'Batu Pahat', premise_type = 'Hypermarket');
+    johor_batu_pahat_hypermarket = search_premises(state = 'Johor', district = 'Batu Pahat', premise_type = 'Hypermarket')
     print("search_premises by state & district & premise_type:", len(johor_batu_pahat_hypermarket.axes[0]))
     print("search_premises by state & district:", len(search_premises(state = 'Johor', district = 'Batu Pahat').axes[0]))
     print("search_premises by state:", len(search_premises(state = 'Johor').axes[0]))
