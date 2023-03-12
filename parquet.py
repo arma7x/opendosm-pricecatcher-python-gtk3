@@ -57,14 +57,14 @@ def search_pricecatcher(premise_codes = None, item_codes = None):
   if 'date' in pricecatcher.columns: pricecatcher['date'] = pd.to_datetime(pricecatcher['date'])
   if (premise_codes != None and item_codes != None):
     q = f'premise_code in {premise_codes} and item_code in {item_codes}'
-    return pricecatcher.query(q)
+    return pd.merge(pricecatcher.query(q), lookup_premise, left_on='premise_code', right_on='premise_code').merge(lookup_item, left_on='item_code', right_on='item_code')
   elif (premise_codes != None):
     q = f'premise_code in {premise_codes}'
-    return pricecatcher.query(q)
+    return pd.merge(pricecatcher.query(q), lookup_premise, left_on='premise_code', right_on='premise_code').merge(lookup_item, left_on='item_code', right_on='item_code')
   elif (item_codes != None):
     q = f'item_code in {item_codes}'
-    return pricecatcher.query(q)
-  return pricecatcher
+    return pd.merge(pricecatcher.query(q), lookup_premise, left_on='premise_code', right_on='premise_code').merge(lookup_item, left_on='item_code', right_on='item_code')
+  return pd.merge(pricecatcher, lookup_premise, left_on='premise_code', right_on='premise_code').merge(lookup_item, left_on='item_code', right_on='item_code')
 
 def group_price_list_by_premise_item(dataFrame):
   price_list = dict()
