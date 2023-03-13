@@ -12,6 +12,8 @@ class PriceCatcher(Gtk.Window):
   state         = None
   district      = None
   premise_type  = None
+  items         = None
+  premises      = None
   hbox          = None
   hboxcombobox  = None
 
@@ -102,15 +104,32 @@ class PriceCatcher(Gtk.Window):
       self.premise_type = None
 
   def show_price_list(self, button):
-    # print(self.group, self.category, self.state, self.district, self.premise_type)
-    item_codes = tuple([item_code for _, item_code in parquet.search_items(item_category=self.category, item_group=self.group).get('item_code').items()])
-    premises_codes = tuple([premise_code for _, premise_code in parquet.search_premises(state=self.state, district=self.district, premise_type=self.premise_type).get('premise_code').items()])
+    if (self.group == None and self.category == None):
+      return
+
+    self.items = dict()
+    item_codes = list()
+    for item in parquet.search_items(item_category=self.category, item_group=self.group).itertuples():
+      self.items[item[1]] = item
+      item_codes.append(item[1])
+    item_codes = tuple(item_codes)
+
+    self.premises = dict()
+    premises_codes = list()
+    for premise in parquet.search_premises(state=self.state, district=self.district, premise_type=self.premise_type).itertuples():
+      self.premises[premise[1]] = premise
+      premises_codes.append(premise[1])
+    premises_codes = tuple(premises_codes)
+
     search_result = parquet.search_pricecatcher(premise_codes = premises_codes, item_codes = item_codes)
     price_list = parquet.group_price_list_by_premise_item(search_result)
     for premise in price_list:
+      print(self.premises[premise])
       for item in price_list[premise]:
+        print(self.items[item])
         for i in price_list[premise][item]:
           print(i)
+      print("________________________________")
 
   def on_group_combo_changed(self, combo):
     tree_iter = combo.get_active_iter()
