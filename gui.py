@@ -4,6 +4,17 @@ import parquet
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
+class AlertDialog(Gtk.Dialog):
+  def __init__(self, parent, title="", description=""):
+    super().__init__(title=title, transient_for=parent, flags=0)
+    self.add_buttons(
+      Gtk.STOCK_OK, Gtk.ResponseType.OK
+    )
+    label = Gtk.Label(label=description)
+    box = self.get_content_area()
+    box.add(label)
+    self.show_all()
+
 class PriceCatcher(Gtk.Window):
 
   locations     = None
@@ -105,6 +116,13 @@ class PriceCatcher(Gtk.Window):
 
   def show_price_list(self, button):
     if (self.group == None and self.category == None):
+      dialog = AlertDialog(self, title="Peringatan!", description="Sila pilih kategori atau kumpulan barangan")
+      response = dialog.run()
+      # if response == Gtk.ResponseType.OK:
+        # print("The OK button was clicked")
+      # elif response == Gtk.ResponseType.CANCEL:
+        # print("The Cancel button was clicked")
+      dialog.destroy()
       return
 
     self.items = dict()
