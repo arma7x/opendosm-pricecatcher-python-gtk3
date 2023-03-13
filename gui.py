@@ -25,8 +25,8 @@ class PriceCatcher(Gtk.Window):
   premise_type  = None
   items         = None
   premises      = None
-  hbox          = None
-  hboxcombobox  = None
+  hbox_menu     = None
+  hbox_combobox = None
 
   def __init__(self):
     super().__init__(title="OpendDOSM - PriceCatcher")
@@ -62,21 +62,24 @@ class PriceCatcher(Gtk.Window):
     states_combo.set_entry_text_column(1)
     states_combo.set_active(0)
 
-    self.hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
-    self.hboxcombobox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
-    self.hboxcombobox.pack_start(item_groups_combo, False, False, 0)
-    self.hboxcombobox.pack_start(item_categories_combo, False, False, 0)
-    self.hboxcombobox.pack_start(states_combo, False, False, 0)
+    self.hbox_menu = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+    self.hbox_combobox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+    self.hbox_combobox.pack_start(item_groups_combo, False, False, 0)
+    self.hbox_combobox.pack_start(item_categories_combo, False, False, 0)
+    self.hbox_combobox.pack_start(states_combo, False, False, 0)
 
-    self.hbox.pack_start(self.hboxcombobox, False, False, 0)
+    self.hbox_menu.pack_start(self.hbox_combobox, False, False, 0)
 
     button = Gtk.Button.new_with_label("Papar Data")
     button.connect("clicked", self.show_price_list)
-    self.hbox.pack_start(button, False, False, 0)
+    self.hbox_menu.pack_start(button, False, False, 0)
 
-    self.add(self.hbox)
+    grid = Gtk.Grid()
+    grid.add(self.hbox_menu)
 
-  def hboxcombobox_append_district_combobox(self, state = None):
+    self.add(grid)
+
+  def hbox_combobox_append_district_combobox(self, state = None):
     if (state in self.locations):
       self.state = state
       self.district = None
@@ -89,14 +92,14 @@ class PriceCatcher(Gtk.Window):
       districts_combo.connect("changed", self.on_district_combo_changed)
       districts_combo.set_entry_text_column(1)
       districts_combo.set_active(0)
-      self.hboxcombobox.pack_start(districts_combo, False, False, 0)
+      self.hbox_combobox.pack_start(districts_combo, False, False, 0)
       districts_combo.show()
     else:
       self.state = None
       self.district = None
       self.premise_type = None
 
-  def hboxcombobox_append_premise_type_combobox(self, district = None):
+  def hbox_combobox_append_premise_type_combobox(self, district = None):
     if (district in self.locations[self.state]):
       self.district = district
       self.premise_type = None
@@ -108,7 +111,7 @@ class PriceCatcher(Gtk.Window):
       premises_types_combo.connect("changed", self.on_premise_type_combo_changed)
       premises_types_combo.set_entry_text_column(1)
       premises_types_combo.set_active(0)
-      self.hboxcombobox.pack_start(premises_types_combo, False, False, 0)
+      self.hbox_combobox.pack_start(premises_types_combo, False, False, 0)
       premises_types_combo.show()
     else:
       self.district = None
@@ -174,31 +177,31 @@ class PriceCatcher(Gtk.Window):
       # print("Entered: %s" % entry.get_text())
 
   def on_state_combo_changed(self, combo):
-    if (self.hboxcombobox != None):
-      while (len(self.hboxcombobox.get_children()) > 3):
-        self.hboxcombobox.remove(self.hboxcombobox.get_children()[len(self.hboxcombobox.get_children()) - 1])
-      self.hboxcombobox.show()
+    if (self.hbox_combobox != None):
+      while (len(self.hbox_combobox.get_children()) > 3):
+        self.hbox_combobox.remove(self.hbox_combobox.get_children()[len(self.hbox_combobox.get_children()) - 1])
+      self.hbox_combobox.show()
     tree_iter = combo.get_active_iter()
     if tree_iter is not None:
       model = combo.get_model()
       row_id, name = model[tree_iter][:2]
       # print("State Selected: ID=%d, name=%s" % (row_id, name))
-      self.hboxcombobox_append_district_combobox(name)
+      self.hbox_combobox_append_district_combobox(name)
     else:
       entry = combo.get_child()
       # print("State Entered: %s" % entry.get_text())
 
   def on_district_combo_changed(self, combo):
-    if (self.hboxcombobox != None):
-      while (len(self.hboxcombobox.get_children()) > 4):
-        self.hboxcombobox.remove(self.hboxcombobox.get_children()[len(self.hboxcombobox.get_children()) - 1])
-      self.hboxcombobox.show()
+    if (self.hbox_combobox != None):
+      while (len(self.hbox_combobox.get_children()) > 4):
+        self.hbox_combobox.remove(self.hbox_combobox.get_children()[len(self.hbox_combobox.get_children()) - 1])
+      self.hbox_combobox.show()
     tree_iter = combo.get_active_iter()
     if tree_iter is not None:
       model = combo.get_model()
       row_id, name = model[tree_iter][:2]
       # print("District Selected: ID=%d, name=%s" % (row_id, name))
-      self.hboxcombobox_append_premise_type_combobox(name)
+      self.hbox_combobox_append_premise_type_combobox(name)
     else:
       entry = combo.get_child()
       # print("District Entered: %s" % entry.get_text())
