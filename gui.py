@@ -1,5 +1,6 @@
 import gi
 import parquet
+import string
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
@@ -86,13 +87,12 @@ class PriceCatcher(Gtk.Window):
 
     self.vbox_premise_list = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
 
-    for _ in range(0, 100):
-      listbox = Gtk.ListBox()
-      listbox.set_selection_mode(Gtk.SelectionMode.NONE)
-      label = Gtk.Label(label="NO DATA HERE", xalign=0)
-      label.set_halign(Gtk.Align.CENTER)
-      listbox.add(label)
-      self.vbox_premise_list.add(listbox)
+    listbox = Gtk.ListBox()
+    listbox.set_selection_mode(Gtk.SelectionMode.NONE)
+    label = Gtk.Label(label="NO DATA HERE", xalign=0)
+    label.set_halign(Gtk.Align.CENTER)
+    listbox.add(label)
+    self.vbox_premise_list.add(listbox)
 
     scrolled_window = Gtk.ScrolledWindow()
     scrolled_window.add(self.vbox_premise_list)
@@ -100,6 +100,7 @@ class PriceCatcher(Gtk.Window):
     wrapper.pack_start(scrolled_window, True, True, 0)
 
     self.add(wrapper)
+    self.maximize()
 
   def hbox_search_combobox_append_district_combobox(self, state = None):
     if (state in self.locations):
@@ -166,16 +167,76 @@ class PriceCatcher(Gtk.Window):
 
     search_result = parquet.search_pricecatcher(premise_codes = premises_codes, item_codes = item_codes)
     price_list = parquet.group_price_list_by_premise_item(search_result)
-    self.vbox_premise_list_refill(price_list)
+    self.vbox_premise_list_fill(price_list)
 
-  # TODO
-  def vbox_premise_list_refill(self, price_list):
+  def vbox_premise_list_fill(self, price_list):
+    while (len(self.vbox_premise_list.get_children()) > 0):
+      self.vbox_premise_list.remove(self.vbox_premise_list.get_children()[len(self.vbox_premise_list.get_children()) - 1])
+    if len(price_list) == 0:
+      listbox = Gtk.ListBox()
+      listbox.show()
+      listbox.set_selection_mode(Gtk.SelectionMode.NONE)
+      label = Gtk.Label(label="NO DATA HERE", xalign=0)
+      label.show()
+      label.set_halign(Gtk.Align.CENTER)
+      listbox.add(label)
+      self.vbox_premise_list.add(listbox)
+      return
+
     for premise in price_list:
-      print(self.premises[premise][2], self.premises[premise][3], self.premises[premise][4], self.premises[premise][5], self.premises[premise][6])
+      listbox = Gtk.ListBox()
+      listbox.show()
+      listbox.set_selection_mode(Gtk.SelectionMode.NONE)
+
+      vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+      vbox.show()
+
+      premise_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+      premise_box.show()
+
+      label_premise = Gtk.Label(xalign=0)
+      label_premise.set_markup(f'<span size="11999"><b>{str(self.premises[premise][2]).strip()}</b></span>')
+      label_premise.show()
+      premise_box.add(label_premise)
+
+      label_address = Gtk.Label(xalign=0)
+      label_address.set_markup(f'<span size="11999"><b>{" ".join(str(self.premises[premise][3]).split())}</b></span>')
+      label_address.show()
+      premise_box.add(label_address)
+
+      label_state = Gtk.Label(label=str(self.premises[premise][5]).strip(), xalign=0)
+      label_state.show()
+      premise_box.pack_end(label_state, False, False, 0)
+
+      label_district = Gtk.Label(label=str(self.premises[premise][6]).strip(), xalign=0)
+      label_district.show()
+      premise_box.pack_end(label_district, False, False, 0)
+
+      label_premise_type = Gtk.Label(label=str(self.premises[premise][4]).strip(), xalign=0)
+      label_premise_type.show()
+      premise_box.pack_end(label_premise_type, False, False, 0)
+
+      vbox.add(premise_box)
+
+      listbox.add(vbox)
       for item in price_list[premise]:
-        print("\t", self.items[item][2], self.items[item][3], self.items[item][4], self.items[item][5])
+        text_lines = list()
         for i in price_list[premise][item]:
-          print("\t\t", i[1], i[2], i[3], i[4])
+          text_lines.append("\t" + str(i[1]).replace(" 00:00:00", "") + "\t\tRM" + str(format(float(i[4]), '.2f')))
+        item_expander = Gtk.Expander(
+          label=" ".join([str(self.items[item][2]), str(self.items[item][3]), str(self.items[item][4]), str(self.items[item][5])])
+        )
+        item_expander.show()
+        item_expander.set_expanded(False)
+        item_expander.show()
+
+        details = Gtk.Label(label="\n".join(text_lines), xalign=0)
+        details.set_halign(Gtk.Align.START)
+        details.show()
+
+        item_expander.add(details)
+        vbox.add(item_expander)
+      self.vbox_premise_list.add(listbox)
 
 
   def on_group_combo_changed(self, combo):
