@@ -14,6 +14,7 @@ def get_parquet_content_length(url):
     return 0
 
 def download_parquet(url):
+  print(f'Downloading: {url}')
   filename = urlparse(url).path.split('/')[-1]
   response = requests.get(url)
   Path(os.path.join(os.getcwd(), "parquets")).mkdir(parents=True, exist_ok=True)
